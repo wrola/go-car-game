@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Racing Game - Local Multiplayer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>2D Racing Game - Local Multiplayer</h1>
+        <div id="status">Connecting...</div>
+        <div id="info">
+            <div><strong>Player 1 (Red):</strong> W/A/S/D</div>
+            <div><strong>Player 2 (Cyan):</strong> Arrow Keys</div>
+        </div>
+        <canvas id="gameCanvas" width="1400" height="600"></canvas>
+        <div id="controls">
+            <h3>Controls:</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h4>Player 1 (Red Car)</h4>
+                    <p>W: Accelerate</p>
+                    <p>S: Brake/Reverse</p>
+                    <p>A: Turn Left</p>
+                    <p>D: Turn Right</p>
+                </div>
+                <div>
+                    <h4>Player 2 (Cyan Car)</h4>
+                    <p>↑: Accelerate</p>
+                    <p>↓: Brake/Reverse</p>
+                    <p>←: Turn Left</p>
+                    <p>→: Turn Right</p>
+                </div>
+            </div>
+        </div>
+        <div id="winner" class="hidden"></div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

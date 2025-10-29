@@ -1,0 +1,122 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 1500px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 2.5em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#status {
+    text-align: center;
+    padding: 10px;
+    background: #f0f0f0;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+#status.connected {
+    background: #4CAF50;
+    color: white;
+}
+
+#status.disconnected {
+    background: #f44336;
+    color: white;
+}
+
+#info {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+#info div {
+    font-weight: bold;
+}
+
+#info span {
+    color: #667eea;
+}
+
+#gameCanvas {
+    border: 3px solid #333;
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto;
+    background: #87CEEB;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#controls {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f0f0f0;
+    border-radius: 8px;
+}
+
+#controls h3 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+#controls p {
+    margin: 5px 0;
+    color: #666;
+}
+
+#controls h4 {
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+#winner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 40px 60px;
+    border-radius: 20px;
+    font-size: 2em;
+    font-weight: bold;
+    text-align: center;
+    z-index: 1000;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+#winner.hidden {
+    display: none;
+}
+
+.gold {
+    color: #FFD700;
+}

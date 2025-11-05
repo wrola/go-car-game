@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/websocket"
 	"math"
 	"sync"
+	"time"
 )
 
 const (
@@ -24,18 +25,20 @@ type Player struct {
 	Speed            float64
 	Finished         bool
 	Checkpoint       int
+	LastActivity     time.Time
 	stateMutex       sync.Mutex
 }
 
 func NewPlayer(id string, conn *websocket.Conn, initialX, initialY float64) *Player {
 	return &Player{
-		ID:        id,
-		Conn:      conn,
-		PositionX: initialX,
-		PositionY: initialY,
-		Angle:     0,
-		Speed:     0,
-		Finished:  false,
+		ID:           id,
+		Conn:         conn,
+		PositionX:    initialX,
+		PositionY:    initialY,
+		Angle:        0,
+		Speed:        0,
+		Finished:     false,
+		LastActivity: time.Now(),
 	}
 }
 
@@ -56,6 +59,10 @@ func (p *Player) UpdatePosition() {
 func (p *Player) ProcessMovementInput(up, down, left, right bool) {
 	p.stateMutex.Lock()
 	defer p.stateMutex.Unlock()
+
+	if up || down || left || right {
+		p.LastActivity = time.Now()
+	}
 
 	if up {
 		p.Speed += CarAcceleration
@@ -85,6 +92,12 @@ func (p *Player) ProcessMovementInput(up, down, left, right bool) {
 	if p.Angle >= 360 {
 		p.Angle -= 360
 	}
+}
+
+func (p *Player) IsInactive(timeout time.Duration) bool {
+	p.stateMutex.Lock()
+	defer p.stateMutex.Unlock()
+	return time.Since(p.LastActivity) > timeout
 }
 
 func (p *Player) SerializePlayerState() map[string]interface{} {

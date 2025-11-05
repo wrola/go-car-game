@@ -34,13 +34,21 @@ func handleLocalGame(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	room := game.NewRoom("local")
+	setup := game.NewGameSetup("local")
+	setup.AddPlayer(game.PlayerConfig{
+		ID:         "1",
+		X:          100.0,
+		Y:          200.0,
+		KeyMapping: game.WASDMapping,
+	})
+	setup.AddPlayer(game.PlayerConfig{
+		ID:         "2",
+		X:          100.0,
+		Y:          350.0,
+		KeyMapping: game.ArrowKeyMapping,
+	})
 
-	player1 := game.NewPlayer("1", conn, 100.0, 200.0)
-	player2 := game.NewPlayer("2", conn, 100.0, 350.0)
-
-	room.AddPlayer(player1)
-	room.AddPlayer(player2)
+	room, inputHandlers := setup.Initialize(conn)
 
 	log.Printf("Local multiplayer game started")
 
@@ -52,10 +60,14 @@ func handleLocalGame(w http.ResponseWriter, r *http.Request) {
 	}
 	conn.WriteJSON(connectionMessage)
 
+	done, cleanup := startConnectionHealthcheck(conn)
+	defer cleanup()
+
 	for {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
 			log.Printf("Error reading message: %v", err)
+			close(done)
 			break
 		}
 
@@ -73,38 +85,16 @@ func handleLocalGame(w http.ResponseWriter, r *http.Request) {
 		switch messageType {
 		case "input":
 			if inputData, ok := clientMessage["input"].(map[string]interface{}); ok {
-				player1InputState := make(map[string]bool)
-				if val, ok := inputData["w"].(bool); ok {
-					player1InputState["up"] = val
+				for playerID, handler := range inputHandlers {
+					movementState := handler.Translate(inputData)
+					room.HandlePlayerInput(playerID, movementState)
 				}
-				if val, ok := inputData["s"].(bool); ok {
-					player1InputState["down"] = val
-				}
-				if val, ok := inputData["a"].(bool); ok {
-					player1InputState["left"] = val
-				}
-				if val, ok := inputData["d"].(bool); ok {
-					player1InputState["right"] = val
-				}
-				room.HandlePlayerInput("1", player1InputState)
-
-				player2InputState := make(map[string]bool)
-				if val, ok := inputData["up"].(bool); ok {
-					player2InputState["up"] = val
-				}
-				if val, ok := inputData["down"].(bool); ok {
-					player2InputState["down"] = val
-				}
-				if val, ok := inputData["left"].(bool); ok {
-					player2InputState["left"] = val
-				}
-				if val, ok := inputData["right"].(bool); ok {
-					player2InputState["right"] = val
-				}
-				room.HandlePlayerInput("2", player2InputState)
 			}
 		}
 	}
+
+	room.MarkConnectionClosed()
+	room.TriggerShutdown()
 
 	log.Printf("Local game ended")
 }
